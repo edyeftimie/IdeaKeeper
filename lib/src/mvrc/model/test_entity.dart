@@ -1,5 +1,5 @@
 class TestEntity {
-  final String id;
+  final int id;
   final String name;
   final String description;
   final String imageUrl;
@@ -10,6 +10,12 @@ class TestEntity {
     required this.description,
     required this.imageUrl,
   });
+
+  TestEntity.empty():
+    id = -1,
+    name = '',
+    description = '',
+    imageUrl = '';
 
   factory TestEntity.fromJson(Map<String, dynamic> json) {
     return TestEntity(

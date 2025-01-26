@@ -23,11 +23,38 @@ class _ListItemViewState extends State<ListItemView> {
     super.dispose();
   }
 
-  Future<void> TODO() {
-    // TODO
-    debugPrint("TODO");
-    return Future.value(); // returns a future with no result
+  Future<void> _navigateToEdit(BuildContext context, dynamic item, AsyncSnapshot snapshot) async {
+    int idAux = int.parse(item['id'].toString());
+    final result = await Navigator.of(context).pushNamed('/add_edit_item?id=$idAux');
+    if (result != null) {
+      setState (() {
+      });
+      debugPrint('Item updated');
+    }
   }
+
+  Future<void> _navigateToAdd(BuildContext context, AsyncSnapshot snapshot) async {
+    final result = await Navigator.of(context).pushNamed('/add_edit_item');
+    if (result != null) {
+      setState (() {
+      });
+      debugPrint('Item added');
+    }
+  }
+
+  Future<void> _navigateToDelete(BuildContext context, dynamic item, AsyncSnapshot snapshot) async {
+    int idAux = int.parse(item['id'].toString());
+    await widget.repo.delete(idAux);
+    setState (() {
+    });
+    debugPrint('Item deleted');
+  }
+
+  // Future<void> TODO() {
+  //   // TODO , and to delete after the implementation
+  //   debugPrint("TODO");
+  //   return Future.value(); // returns a future with no result
+  // }
 
   Color randomColour() {
     return Color((int.parse('0xFF${(1 + Random().nextInt(0xFFFFFF)).toRadixString(16).padLeft(6, '0')}')));
@@ -47,20 +74,6 @@ class _ListItemViewState extends State<ListItemView> {
   Color chooseColorContrast(Color color) {
     double luminance = computeLuminance(color);
     debugPrint (luminance.toString());
-    /* 
-    BRIGHT:
-      .00008
-      .00004
-      .00005
-      .00013
-      .00024
-    DARK:
-      .00017
-      .00010
-      .00014
-      .00027
-      .00011
-    */
     return luminance < 0.00017 ? Colors.black : Colors.white;
   }
 
@@ -83,62 +96,73 @@ class _ListItemViewState extends State<ListItemView> {
             );
           } else if (snapshot.connectionState == ConnectionState.done) {
             final items = snapshot.data as List<dynamic>;
-            return RefreshIndicator(
-              onRefresh: TODO,
-              child: ListView.builder(
-                restorationId: 'listItems',
-                itemCount: items.length,
-                padding: const EdgeInsets.all(8),
-                itemBuilder: (context, index) {
-                  final dynamic item = items[index];
-                  // Color colourBackground = randomColour();
-                  // Color colourText = chooseColorContrast(colourBackground);
-                  Color colourBackground = Colors.red;
-                  Color colourText = Colors.white;
-                  return GestureDetector(
-                    onTap: () {
-                      TODO;
-                    },
-                    onLongPress: () {
-                      TODO;
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      margin: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: colourBackground,
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      child: Column (
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          for (var key in item.keys)
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text (
-                                  key.toString().toUpperCase(),
-                                  style: TextStyle(fontSize: 20, color: colourText, fontWeight: FontWeight.bold),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    ': ${item[key]}',
-                                    style: TextStyle(fontSize: 20, color: colourText),
-                                  ),
-                                )
-                              ],
+            return Stack(
+              children: [
+                RefreshIndicator(
+                  onRefresh: () async {
+                    setState(() {});
+                  },
+                  child: ListView.builder(
+                    restorationId: 'listItems',
+                    itemCount: items.length,
+                    padding: const EdgeInsets.all(8),
+                    itemBuilder: (context, index) {
+                      final dynamic item = items[index];
+                      Color colourBackground = Colors.red;
+                      Color colourText = Colors.white;
+                      return GestureDetector(
+                        onTap: () {
+                          _navigateToEdit(context, item, snapshot);
+                        },
+                        onLongPress: () {
+                          _navigateToDelete(context, item, snapshot);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          margin: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: colourBackground,
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Column (
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              for (var key in item.keys)
+                                if (key != 'id')
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text (
+                                        key.toString().toUpperCase(),
+                                        style: TextStyle(fontSize: 20, color: colourText, fontWeight: FontWeight.bold),
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          ': ${item[key]}',
+                                          style: TextStyle(fontSize: 20, color: colourText),
+                                        ),
+                                      )
+                                    ],
 
-                            )
-                            // Text(
-                            //   '${item[key]}',
-                            //   style: TextStyle(fontSize: 20, color: colourText, fontWeight: FontWeight.bold),
-                            // ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              )
+                                  )
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                ),
+                Positioned(
+                  bottom: 16,
+                  right: 16,
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      _navigateToAdd(context, snapshot);
+                    },
+                    child: const Icon(Icons.add),
+                  ),
+                ),
+              ],
             );
           } else {
             return const Center(

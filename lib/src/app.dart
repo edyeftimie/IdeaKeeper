@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:exam_project/src/mvrc/view/list_view.dart';
 import 'package:exam_project/src/mvrc/repository/abstract_repo.dart';
+import 'package:exam_project/src/mvrc/view/add_or_edit_item_view.dart ';
 
 class MyApp extends StatelessWidget {
   const MyApp({
@@ -28,15 +29,18 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: (RouteSettings routeSettings) {
         return MaterialPageRoute(
           builder: (context) {
-            switch (routeSettings.name) {
+            final Uri uri = Uri.parse(routeSettings.name!);
+            print (uri.path);
+            switch (uri.path) {
               case '/':
                 return ListItemView(repo: repo);
+              case '/add_edit_item':
+                if (uri.queryParameters['id'] != null) {
+                  return AddEditItem(repo: repo, id: int.parse(uri.queryParameters['id']!));
+                }
+                return AddEditItem(repo: repo, id: null);
               default:
-                return const Scaffold(
-                  body: Center(
-                    child: Text('404 - Page not found'),
-                  ),
-                );
+                return ListItemView(repo: repo);
             }
           }
         );

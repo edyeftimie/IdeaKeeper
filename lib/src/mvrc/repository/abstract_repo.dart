@@ -14,9 +14,7 @@ class AbstractRepo {
   }
 
   Future<Database> get database async {
-    debugPrint( 'get database called' );
     if (_database != null) {
-      debugPrint( 'database already exists' );
       return _database!;
     }
     debugPrint( 'database does not exist' );
@@ -26,6 +24,7 @@ class AbstractRepo {
   }
 
   Future<Database> initDatabase() async {
+    debugPrint( 'initDatabase called' );
     String entityName = _entity.runtimeType.toString().toLowerCase();
     debugPrint (entityName);
     final databasePath = await getDatabasesPath();
@@ -60,18 +59,35 @@ class AbstractRepo {
   }
 
   Future<List<Map<String, dynamic>>> getAll() async {
+    debugPrint ('getAll called');
     final db = await database;
     String entityName = _entity.runtimeType.toString().toLowerCase();
-    return db.query(entityName);
+    dynamic answer = await db.query(entityName);
+    print (answer);
+    return answer;
   }
 
   Future<void> insert(Map<String, dynamic> entityMap) async {
+    debugPrint ('insert called');
     final db = await database;
     String entityName = _entity.runtimeType.toString().toLowerCase();
+    entityMap['id'] = await getAvailableId();
     await db.insert(entityName, entityMap);
   }
 
+  Future<int> getAvailableId() async {
+    debugPrint ('getAvailableId called');
+    var dbClient = await database;
+    List<Map> maps = await dbClient.rawQuery('SELECT MAX(id)+1 as id FROM ${_entity.runtimeType.toString().toLowerCase()}');
+    if (maps[0]['id'] == null) {
+      return 1;
+    } else {
+      return maps[0]['id'];
+    }
+  }
+
   Future<void> update(Map<String, dynamic> entityMap) async {
+    debugPrint ('update called');
     final db = await database;
     String entityName = _entity.runtimeType.toString().toLowerCase();
     await db.update(
@@ -83,6 +99,7 @@ class AbstractRepo {
   }
 
   Future<void> delete(int id) async {
+    debugPrint ('delete called');
     final db = await database;
     String entityName = _entity.runtimeType.toString().toLowerCase();
     await db.delete(
@@ -92,7 +109,20 @@ class AbstractRepo {
     );
   }
 
+  Future<Map<String, dynamic>> getById(int id) async {
+    debugPrint ('getById called');
+    final db = await database;
+    String entityName = _entity.runtimeType.toString().toLowerCase();
+    List<Map<String, dynamic>> maps = await db.query(
+      entityName, 
+      where: 'id = ?', 
+      whereArgs: [id]
+    );
+    return maps[0];
+  }
+
   Future<void> close() async {
+    debugPrint ('close called');
     final db = await database;
     db.close();
   }
