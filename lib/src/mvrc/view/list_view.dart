@@ -12,49 +12,55 @@ class ListItemView extends StatefulWidget {
 }
 
 class _ListItemViewState extends State<ListItemView> {
+  late ValueNotifier<List<Map<String, dynamic>>> _itemsNotifier;
+
   @override
   void initState() {
     super.initState();
-    widget.repo.database;
+    _itemsNotifier = ValueNotifier([]);
+    _loadItems();
   }
 
   @override
   void dispose() {
+    _itemsNotifier.dispose();
     super.dispose();
   }
 
-  Future<void> _navigateToEdit(BuildContext context, dynamic item, AsyncSnapshot snapshot) async {
+  Future<void> _loadItems() async {
+    final items = await widget.repo.getAll();
+    _itemsNotifier.value = List<Map<String, dynamic>>.from(items);
+  }
+
+  Future<void> _navigateToEdit(BuildContext context, dynamic item) async {
     int idAux = int.parse(item['id'].toString());
     final result = await Navigator.of(context).pushNamed('/add_edit_item?id=$idAux');
-    if (result != null) {
-      setState (() {
-      });
+    if (result != null && result is Map<String, dynamic>) {
+      final index = _itemsNotifier.value.indexWhere((e) => e['id'] == result['id']);
+      if (index != -1) {
+        _itemsNotifier.value[index] = result;
+        _itemsNotifier.notifyListeners();
+      }
       debugPrint('Item updated');
     }
   }
 
-  Future<void> _navigateToAdd(BuildContext context, AsyncSnapshot snapshot) async {
+  Future<void> _navigateToAdd(BuildContext context) async {
     final result = await Navigator.of(context).pushNamed('/add_edit_item');
-    if (result != null) {
-      setState (() {
-      });
+    if (result != null && result is Map<String, dynamic>) {
+      _itemsNotifier.value.add(result);
+      _itemsNotifier.notifyListeners();
       debugPrint('Item added');
     }
   }
 
-  Future<void> _navigateToDelete(BuildContext context, dynamic item, AsyncSnapshot snapshot) async {
+  Future<void> _navigateToDelete(BuildContext context, dynamic item) async {
     int idAux = int.parse(item['id'].toString());
-    await widget.repo.delete(idAux);
-    setState (() {
-    });
+    await widget.repo.delete(idAux); // Assuming delete operation handled by repo.
+    _itemsNotifier.value.removeWhere((e) => e['id'] == idAux);
+    _itemsNotifier.notifyListeners();
     debugPrint('Item deleted');
   }
-
-  // Future<void> TODO() {
-  //   // TODO , and to delete after the implementation
-  //   debugPrint("TODO");
-  //   return Future.value(); // returns a future with no result
-  // }
 
   Color randomColour() {
     return Color((int.parse('0xFF${(1 + Random().nextInt(0xFFFFFF)).toRadixString(16).padLeft(6, '0')}')));
@@ -73,102 +79,88 @@ class _ListItemViewState extends State<ListItemView> {
 
   Color chooseColorContrast(Color color) {
     double luminance = computeLuminance(color);
-    debugPrint (luminance.toString());
+    debugPrint(luminance.toString());
     return luminance < 0.00017 ? Colors.black : Colors.white;
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('Building list view');
     return Scaffold(
       appBar: AppBar(
         title: const Text('List View'),
       ),
-      body: FutureBuilder(
-        future: widget.repo.getAll(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return const Center(
-              child: Text('An error occurred'),
-            );
-          } else if (snapshot.connectionState == ConnectionState.done) {
-            final items = snapshot.data as List<dynamic>;
-            return Stack(
-              children: [
-                RefreshIndicator(
-                  onRefresh: () async {
-                    setState(() {});
-                  },
-                  child: ListView.builder(
-                    restorationId: 'listItems',
-                    itemCount: items.length,
-                    padding: const EdgeInsets.all(8),
-                    itemBuilder: (context, index) {
-                      final dynamic item = items[index];
-                      Color colourBackground = Colors.red;
-                      Color colourText = Colors.white;
-                      return GestureDetector(
-                        onTap: () {
-                          _navigateToEdit(context, item, snapshot);
-                        },
-                        onLongPress: () {
-                          _navigateToDelete(context, item, snapshot);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          margin: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: colourBackground,
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          child: Column (
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              for (var key in item.keys)
-                                if (key != 'id')
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text (
-                                        key.toString().toUpperCase(),
-                                        style: TextStyle(fontSize: 20, color: colourText, fontWeight: FontWeight.bold),
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          ': ${item[key]}',
-                                          style: TextStyle(fontSize: 20, color: colourText),
-                                        ),
-                                      )
-                                    ],
-
-                                  )
-                            ],
-                          ),
+      body: ValueListenableBuilder<List<Map<String, dynamic>>>(
+        valueListenable: _itemsNotifier,
+        builder: (context, items, child) {
+          return Stack(
+            children: [
+              RefreshIndicator(
+                onRefresh: _loadItems,
+                child: ListView.builder(
+                  restorationId: 'listItems',
+                  itemCount: items.length,
+                  padding: const EdgeInsets.all(8),
+                  itemBuilder: (context, index) {
+                    final dynamic item = items[index];
+                    Color colourBackground = Colors.red;
+                    Color colourText = Colors.white;
+                    return GestureDetector(
+                      onTap: () {
+                        _navigateToEdit(context, item);
+                      },
+                      onLongPress: () {
+                        _navigateToDelete(context, item);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        margin: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: colourBackground,
+                          borderRadius: BorderRadius.circular(25),
                         ),
-                      );
-                    },
-                  )
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            for (var key in item.keys)
+                              if (key != 'id')
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      key.toString().toUpperCase(),
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          color: colourText,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        ': ${item[key]}',
+                                        style: TextStyle(fontSize: 20, color: colourText),
+                                      ),
+                                    )
+                                  ],
+                                )
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                Positioned(
-                  bottom: 16,
-                  right: 16,
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      _navigateToAdd(context, snapshot);
-                    },
-                    child: const Icon(Icons.add),
-                  ),
+              ),
+              Positioned(
+                bottom: 16,
+                right: 16,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    _navigateToAdd(context);
+                  },
+                  child: const Icon(Icons.add),
                 ),
-              ],
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+              ),
+            ],
+          );
         },
       ),
     );
