@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:exam_project/src/mvrc/model/test_entity.dart';
 //MODIFICATION
 import 'package:exam_project/src/mvrc/repository/abstract_repo.dart';
 import 'package:exam_project/src/mvrc/view/widgets/item_form.dart';
+import 'package:exam_project/src/mvrc/model/abstract_entity.dart';
 
-class AddEditItem extends StatefulWidget {
-  final AbstractRepo<TestEntity> repo;
+class AddEditItem<T extends Entity> extends StatefulWidget {
+  final AbstractRepo<T> repo;
   //MODIFICATION
   final int? id;
+  final T Function(Map<String, dynamic> json) fromJson;
 
-  const AddEditItem({Key? key, required this.repo, this.id}) : super(key: key);
+  const AddEditItem({Key? key, required this.repo, this.id, required this.fromJson}) : super(key: key);
 
   @override
-  _AddEditItemState createState() => _AddEditItemState();
+  _AddEditItemState<T> createState() => _AddEditItemState<T>();
 }
 
-class _AddEditItemState extends State<AddEditItem> {
+class _AddEditItemState<T extends Entity> extends State<AddEditItem<T>> {
   bool get isAdd => widget.id == null;
 
   @override
@@ -25,10 +26,10 @@ class _AddEditItemState extends State<AddEditItem> {
         title: Text(isAdd ? 'Add Item' : 'Edit Item'),
       ),
       //MODIFICATION
-      body: FutureBuilder<TestEntity>(
+      body: FutureBuilder<T>(
         future: widget.id == null
             //MODIFICATION
-            ? Future.value(TestEntity.empty())
+            ? Future.value(widget.fromJson({}))
             : widget.repo.getById(widget.id!),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -40,7 +41,7 @@ class _AddEditItemState extends State<AddEditItem> {
               entity: snapshot.data!,
               onSubmit: (Map<String, dynamic> entityMap) async {
                 //MODIFICATION
-                TestEntity entity = TestEntity.fromJson(entityMap);
+                T entity = widget.fromJson(entityMap);
                 if (isAdd) {
                   await widget.repo.insert(entity);
                 } else {

@@ -6,13 +6,12 @@ import 'package:exam_project/src/mvrc/view/add_or_edit_item_view.dart ';
 import 'package:exam_project/src/mvrc/model/test_entity.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({
-    super.key,
-    required this.repo,
-  });
-
   final AbstractRepo<TestEntity> repo;
 
+  const MyApp({
+    Key? key,
+    required this.repo,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +35,15 @@ class MyApp extends StatelessWidget {
               case '/':
                 return ListItemView(repo: repo);
               case '/add_edit_item':
+                int? idAux;
                 if (uri.queryParameters['id'] != null) {
-                  return AddEditItem(repo: repo, id: int.parse(uri.queryParameters['id']!));
+                  idAux = int.parse(uri.queryParameters['id']!);
                 }
-                return AddEditItem(repo: repo, id: null);
+                return AddEditItem<TestEntity>(
+                  repo: repo,
+                  id: idAux,
+                  fromJson: TestEntity.fromJson,
+                );
               default:
                 return ListItemView(repo: repo);
             }
