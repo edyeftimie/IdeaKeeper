@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:exam_project/src/mvrc/repository/abstract_repo.dart';
+// import 'package:flutter/src/foundation/change_notifier.dart';
 import 'dart:math';
 
 class ListItemView extends StatefulWidget {
@@ -29,7 +30,7 @@ class _ListItemViewState extends State<ListItemView> {
 
   Future<void> _loadItems() async {
     final items = await widget.repo.getAll();
-    _itemsNotifier.value = List<Map<String, dynamic>>.from(items);
+    _itemsNotifier.value = items.map((e) => e.toJson()).toList();
   }
 
   Future<void> _navigateToEdit(BuildContext context, dynamic item) async {
@@ -39,7 +40,7 @@ class _ListItemViewState extends State<ListItemView> {
       final index = _itemsNotifier.value.indexWhere((e) => e['id'] == result['id']);
       if (index != -1) {
         _itemsNotifier.value[index] = result;
-        _itemsNotifier.notifyListeners();
+        _itemsNotifier.value = List<Map<String, dynamic>>.from(_itemsNotifier.value);
       }
       debugPrint('Item updated');
     }
@@ -49,7 +50,7 @@ class _ListItemViewState extends State<ListItemView> {
     final result = await Navigator.of(context).pushNamed('/add_edit_item');
     if (result != null && result is Map<String, dynamic>) {
       _itemsNotifier.value.add(result);
-      _itemsNotifier.notifyListeners();
+      _itemsNotifier.value = List<Map<String, dynamic>>.from(_itemsNotifier.value);
       debugPrint('Item added');
     }
   }
@@ -58,7 +59,7 @@ class _ListItemViewState extends State<ListItemView> {
     int idAux = int.parse(item['id'].toString());
     await widget.repo.delete(idAux); // Assuming delete operation handled by repo.
     _itemsNotifier.value.removeWhere((e) => e['id'] == idAux);
-    _itemsNotifier.notifyListeners();
+    _itemsNotifier.value = List<Map<String, dynamic>>.from(_itemsNotifier.value);
     debugPrint('Item deleted');
   }
 

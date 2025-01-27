@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:exam_project/src/mvrc/view/list_view.dart';
 import 'package:exam_project/src/mvrc/repository/abstract_repo.dart';
 import 'package:exam_project/src/mvrc/view/add_or_edit_item_view.dart ';
+import 'package:exam_project/src/mvrc/model/test_entity.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({
@@ -10,7 +11,7 @@ class MyApp extends StatelessWidget {
     required this.repo,
   });
 
-  final AbstractRepo repo;
+  final AbstractRepo<TestEntity> repo;
 
 
   @override
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
         return MaterialPageRoute(
           builder: (context) {
             final Uri uri = Uri.parse(routeSettings.name!);
-            print (uri.path);
+            debugPrint (uri.path);
             switch (uri.path) {
               case '/':
                 return ListItemView(repo: repo);

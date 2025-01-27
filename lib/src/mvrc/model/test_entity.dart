@@ -1,8 +1,11 @@
-class TestEntity {
-  final int id;
-  final String name;
-  final String description;
-  final String imageUrl;
+import 'package:exam_project/src/mvrc/model/abstract_entity.dart';
+
+class TestEntity implements Entity {
+  @override
+  int id;
+  String name;
+  String description;
+  String imageUrl;
 
   TestEntity({
     required this.id,
@@ -18,14 +21,18 @@ class TestEntity {
     imageUrl = '';
 
   factory TestEntity.fromJson(Map<String, dynamic> json) {
+    if (json.isEmpty) {
+      return TestEntity.empty();
+    }
     return TestEntity(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      imageUrl: json['imageUrl'],
+      id: json['id'] ?? -1,
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
