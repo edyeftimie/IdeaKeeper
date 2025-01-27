@@ -14,8 +14,7 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   final AbstractRepo<TestEntity> repo = AbstractRepo(tableName: 'testing', fromJson: TestEntity.fromJson);
-  // final AbstractRepo repo = AbstractRepo(tableName: 'test', fromJson: TestEntity.fromJson);
   await repo.database;
   
-  runApp(MyApp(repo: repo));
+  runApp(MyApp<TestEntity>(repo: repo, fromJson: TestEntity.fromJson));
 }

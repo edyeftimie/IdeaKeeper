@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:exam_project/src/mvrc/view/list_view.dart';
 import 'package:exam_project/src/mvrc/repository/abstract_repo.dart';
 import 'package:exam_project/src/mvrc/view/add_or_edit_item_view.dart ';
-import 'package:exam_project/src/mvrc/model/test_entity.dart';
+import 'package:exam_project/src/mvrc/model/abstract_entity.dart';
 
-class MyApp extends StatelessWidget {
-  final AbstractRepo<TestEntity> repo;
+class MyApp<T extends Entity> extends StatelessWidget {
+  final AbstractRepo<T> repo;
+  final T Function(Map<String, dynamic> json) fromJson;
 
   const MyApp({
     Key? key,
     required this.repo,
+    required this.fromJson,
   }) : super(key: key);
 
   @override
@@ -39,10 +41,10 @@ class MyApp extends StatelessWidget {
                 if (uri.queryParameters['id'] != null) {
                   idAux = int.parse(uri.queryParameters['id']!);
                 }
-                return AddEditItem<TestEntity>(
+                return AddEditItem<T>(
                   repo: repo,
                   id: idAux,
-                  fromJson: TestEntity.fromJson,
+                  fromJson: fromJson,
                 );
               default:
                 return ListItemView(repo: repo);
