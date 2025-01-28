@@ -34,7 +34,7 @@ class MenuView extends StatelessWidget {
                 if (isOnline.value == false) {
                   MakeAlertDialog(context, 'No internet connection');
                 } else {
-                  Navigator.of(context).pushNamed('/genres_list');
+                  Navigator.of(context).pushNamed('/monthly_analysis');
                 }
               },
               child: Text('Reports Section'),

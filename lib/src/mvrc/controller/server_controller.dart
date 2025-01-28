@@ -11,28 +11,29 @@ class ServerController <T extends Entity> {
   final T Function(Map<String, dynamic> json) fromJson;
   final String crud = 'transaction';
   final String get = 'transactions';
+  final String get_all = 'allTransactions';
   final String url = 'ws://localhost:2528';
 
   ServerController({required this.baseUrl, required Function onReconnect, required this.fromJson}) {
     _webSocketController = WebSocketController(url: url, onReconnect: onReconnect);
   }
 
-  Future<List<String>> getGenres() async {
-    final response = await http.get(Uri.parse('$baseUrl/genres'));
-    List<String> genres = [];
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
-      for (var genre in data) {
-        if (genres.contains(genre)) {
-          continue;
-        }
-        genres.add(genre);
-      }
-      return genres;
-    } else {
-      throw Exception('Failed to load genres');
-    }
-  }
+  // Future<List<String>> getGenres() async {
+  //   final response = await http.get(Uri.parse('$baseUrl/genres'));
+  //   List<String> genres = [];
+  //   if (response.statusCode == 200) {
+  //     List<dynamic> data = json.decode(response.body);
+  //     for (var genre in data) {
+  //       if (genres.contains(genre)) {
+  //         continue;
+  //       }
+  //       genres.add(genre);
+  //     }
+  //     return genres;
+  //   } else {
+  //     throw Exception('Failed to load genres');
+  //   }
+  // }
 
   Future<List<Map<String, dynamic>>> getBooksByGenre(String genre) async {
     if (genre == 'default_genre') {
@@ -48,6 +49,29 @@ class ServerController <T extends Entity> {
       return books;
     } else {
       throw Exception('Failed to load books by genre');
+    }
+  }
+
+  Future<Map<String, double>> getAll() async {
+    final response = await http.get(Uri.parse('$baseUrl/$get_all'));
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      // List<Map<String, dynamic>> items = [];
+      Map<String, double> monthlySpending = {};
+      for (var item in data) {
+        var date = DateTime.parse(item['date']);
+        var month = date.month;
+        if (monthlySpending.containsKey(month.toString())) {
+          monthlySpending[month.toString()] = monthlySpending[month.toString()]! + item['amount'];
+        } else {
+          monthlySpending[month.toString()] = item['amount'];
+        }
+        debugPrint (monthlySpending.toString());
+      }
+      return monthlySpending;
+      //
+    } else {
+      throw Exception('Failed to load activities');
     }
   }
 

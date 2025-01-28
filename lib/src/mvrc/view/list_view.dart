@@ -82,7 +82,6 @@ class _ListItemViewState extends State<ListItemView> {
       return;
     }
     int idAux = int.parse(item['id'].toString());
-    // await widget.repo.delete(idAux); // Assuming delete operation handled by repo.
     debugPrint ('_navigateToDelete: idAux = $idAux');
     await widget.controller.deleteEntity(idAux);
     _itemsNotifier.value.removeWhere((e) => e['id'] == idAux);

@@ -2,24 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:exam_project/src/mvrc/controller/controller.dart';
 import 'package:exam_project/src/mvrc/controller/globals.dart';
 
-class ListGenresView extends StatefulWidget {
-  // final AbstractRepo repo;
+class MonthlyAnalysis extends StatefulWidget {
   final Controller controller;
 
-  // const ListItemView({Key? key, required this.repo}) : super(key: key);
-  const ListGenresView({Key? key, required this.controller}) : super(key: key);
+  const MonthlyAnalysis({Key? key, required this.controller}) : super(key: key);
 
   @override
-  _ListGenresViewState createState() => _ListGenresViewState();
+  _MonthlyAnalysisState createState() => _MonthlyAnalysisState();
 }
 
-class _ListGenresViewState extends State<ListGenresView> {
-  late ValueNotifier<List<String>> _itemsNotifier;
+class _MonthlyAnalysisState extends State<MonthlyAnalysis> {
+  late ValueNotifier<Map<String, double>> _itemsNotifier;
 
   @override
   void initState() {
     super.initState();
-    _itemsNotifier = ValueNotifier([]);
+    _itemsNotifier = ValueNotifier({});
     _loadItems();
   }
 
@@ -30,36 +28,28 @@ class _ListGenresViewState extends State<ListGenresView> {
   }
 
   Future<void> _loadItems() async {
-    //if network is available
     if (isOnline.value == true) {
-      final items = await widget.controller.serverController.getGenres();
+      final items = await widget.controller.serverController.getAll();
       if (items.isEmpty) {
         debugPrint('No items found');
         return;
       }
       _itemsNotifier.value = items;
+
     } else {
       debugPrint('No internet connection');
       Navigator.of(context).pop();
     }
   }
 
-  Future<void> _navigateToBooksByGenre(BuildContext context, String genre) async {
-    if (isOnline.value == false) {
-      debugPrint('No internet connection');
-      Navigator.of(context).pop();
-    }
-    Navigator.of(context).pushNamed('/books_by_genre?genre=$genre');
-  }
-
-  @override
+    @override
   Widget build(BuildContext context) {
     debugPrint('Building genres view');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Genres View'),
       ),
-      body: ValueListenableBuilder<List<String>>(
+      body: ValueListenableBuilder<Map<String, double>>(
         valueListenable: _itemsNotifier,
         builder: (context, items, child) {
           return Stack(
@@ -67,16 +57,17 @@ class _ListGenresViewState extends State<ListGenresView> {
               RefreshIndicator(
                 onRefresh: _loadItems,
                 child: ListView.builder(
-                  restorationId: 'listGenres',
+                  restorationId: 'analysis',
                   itemCount: items.length,
                   padding: const EdgeInsets.all(8),
                   itemBuilder: (context, index) {
-                    final dynamic item = items[index];
+                    // final dynamic item = items[index];
+                    final item = items.keys.elementAt(index);
                     Color colourBackground = Colors.red;
                     Color colourText = Colors.white;
                     return GestureDetector(
                       onTap: () {
-                        _navigateToBooksByGenre(context, item);
+                        // _navigateToBooksByGenre(context, item);
                       },
                       child: Container(
                         padding: const EdgeInsets.all(8),
@@ -93,6 +84,13 @@ class _ListGenresViewState extends State<ListGenresView> {
                               children: [
                                 Text(
                                   item.toString().toUpperCase(),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: colourText,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text (
+                                  ' - ${items[item]}',
                                   style: TextStyle(
                                       fontSize: 20,
                                       color: colourText,

@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:exam_project/src/mvrc/view/list_view.dart';
-import 'package:exam_project/src/mvrc/view/genres_view.dart';
+// import '../../../old/genres_view.dart';
 import 'package:exam_project/src/mvrc/view/menu_view.dart';
 import 'package:exam_project/src/mvrc/view/add_or_edit_item_view.dart ';
 import 'package:exam_project/src/mvrc/model/abstract_entity.dart';
-import 'package:exam_project/src/mvrc/view/books_genre_view.dart';
+// import 'package:exam_project/src/mvrc/view/books_genre_view.dart';
+import 'package:exam_project/src/mvrc/view/monthly_analysis.dart';
 import 'package:exam_project/src/mvrc/controller/controller.dart';
 import 'package:exam_project/src/mvrc/settings/settings_controller.dart';
 
@@ -71,10 +72,12 @@ class MyApp<T extends Entity> extends StatelessWidget {
                     return MenuView();
                   case '/list_items':
                     return ListItemView(controller: controller);
-                  case '/genres_list':
-                    return ListGenresView(controller: controller);
-                  case '/books_by_genre':
-                    return ListBooksGenreView(controller: controller, genre: uri.queryParameters['genre'] ?? 'default_genre');
+                  case '/monthly_analysis':
+                    return MonthlyAnalysis(controller: controller);
+                  // case '/genres_list':
+                  //   return ListGenresView(controller: controller);
+                  // case '/books_by_genre':
+                  //   return ListBooksGenreView(controller: controller, genre: uri.queryParameters['genre'] ?? 'default_genre');
                   case '/add_edit_item':
                     int? idAux;
                     if (uri.queryParameters['id'] != null) {
