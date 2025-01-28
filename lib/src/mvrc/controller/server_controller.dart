@@ -19,6 +19,40 @@ class ServerController <T extends Entity> {
     _webSocketController = WebSocketController(url: url, onReconnect: onReconnect);
   }
 
+  Future<List<String>> getGenres() async {
+    final response = await http.get(Uri.parse('$baseUrl/genres'));
+    List<String> genres = [];
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      for (var genre in data) {
+        if (genres.contains(genre)) {
+          continue;
+        }
+        genres.add(genre);
+      }
+      return genres;
+    } else {
+      throw Exception('Failed to load genres');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getBooksByGenre(String genre) async {
+    if (genre == 'default_genre') {
+      throw Exception('Failed to load books by genre');
+    }
+    final response = await http.get(Uri.parse('$baseUrl/books/$genre'));
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      List<Map<String, dynamic>> books = [];
+      for (var book in data) {
+        books.add(fromJson(book).toJson());
+      }
+      return books;
+    } else {
+      throw Exception('Failed to load books by genre');
+    }
+  }
+
   Future<List<T>> fetchItems() async {
     //MODIFICATION
     final response = await http.get(Uri.parse('$baseUrl/all'));

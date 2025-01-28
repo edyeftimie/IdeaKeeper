@@ -1,10 +1,14 @@
 import 'package:exam_project/src/mvrc/controller/controller.dart';
+// import 'package:exam_project/src/mvrc/controller/globals.dart';
 import 'package:exam_project/src/mvrc/view/menu_view.dart';
+// import 'package:exam_project/src/mvrc/view/widgets/message.dart';
 import 'package:flutter/material.dart';
 
 import 'package:exam_project/src/mvrc/view/list_view.dart';
+import 'package:exam_project/src/mvrc/view/genres_view.dart';
 import 'package:exam_project/src/mvrc/view/add_or_edit_item_view.dart ';
 import 'package:exam_project/src/mvrc/model/abstract_entity.dart';
+import 'package:exam_project/src/mvrc/view/books_genre_view.dart';
 
 class MyApp<T extends Entity> extends StatelessWidget {
   // final AbstractRepo<T> repo;
@@ -41,6 +45,10 @@ class MyApp<T extends Entity> extends StatelessWidget {
                 return MenuView();
               case '/list_items':
                 return ListItemView(controller: controller);
+              case '/genres_list':
+                return ListGenresView(controller: controller);
+              case '/books_by_genre':
+                return ListBooksGenreView(controller: controller, genre: uri.queryParameters['genre'] ?? 'default_genre');
               case '/add_edit_item':
                 int? idAux;
                 if (uri.queryParameters['id'] != null) {

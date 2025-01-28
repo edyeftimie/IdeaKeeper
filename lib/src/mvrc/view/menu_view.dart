@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:exam_project/src/mvrc/controller/globals.dart';
+import 'package:exam_project/src/mvrc/view/widgets/message.dart';
 
 class MenuView extends StatelessWidget {
   @override
@@ -19,7 +21,11 @@ class MenuView extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pushNamed('/');
+                if (isOnline.value == false) {
+                  MakeAlertDialog(context, 'No internet connection');
+                } else {
+                  Navigator.of(context).pushNamed('/genres_list');
+                }
               },
               child: Text('Report Section'),
             ),
