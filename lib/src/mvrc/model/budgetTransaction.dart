@@ -1,6 +1,6 @@
 import 'package:exam_project/src/mvrc/model/abstract_entity.dart';
 
-class Transaction implements Entity {
+class BudgetTransaction implements Entity {
   @override
   int id;
   String date;
@@ -9,7 +9,7 @@ class Transaction implements Entity {
   String category;
   String description;
 
-  Transaction({
+  BudgetTransaction({
     required this.id,
     required this.date,
     required this.amount,
@@ -18,7 +18,7 @@ class Transaction implements Entity {
     required this.description,
   });
 
-  Transaction.empty():
+  BudgetTransaction.empty():
     id = -1,
     date = '',
     amount = 0.0,
@@ -26,11 +26,11 @@ class Transaction implements Entity {
     category = '',
     description = '';
 
-  factory Transaction.fromJson(Map<String, dynamic> json) {
+  factory BudgetTransaction.fromJson(Map<String, dynamic> json) {
     if (json.isEmpty) {
-      return Transaction.empty();
+      return BudgetTransaction.empty();
     }
-    Transaction transaction = Transaction(
+    BudgetTransaction transaction = BudgetTransaction(
       id: json['id'] is int? json['id'] : int.parse(json['id']),
       date: json['date'] ?? '',
       amount: json['amount'] is double? json['amount'] : double.parse(json['amount']),

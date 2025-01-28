@@ -31,15 +31,15 @@ class ItemForm extends StatelessWidget {
     if (initialValue is bool && value != 'true' && value != 'false') {
       return 'Please enter true or false';
     }
-    if (initialValue is List && (value[0] != '[' || value[value.length - 1] != ']')) {
-      return 'Please enter a valid list';
-    }
-    if (initialValue is Map && (value[0] != '{' || value[value.length - 1] != '}')) {
-      return 'Please enter a valid map';
-    }
-    if (initialValue is DateTime && DateTime.tryParse(value) == null) {
-      return 'Please enter a valid date';
-    }
+    // if (initialValue is List && (value[0] != '[' || value[value.length - 1] != ']')) {
+    //   return 'Please enter a valid list';
+    // }
+    // if (initialValue is Map && (value[0] != '{' || value[value.length - 1] != '}')) {
+    //   return 'Please enter a valid map';
+    // }
+    // if (initialValue is DateTime && DateTime.tryParse(value) == null) {
+    //   return 'Please enter a valid date';
+    // }
     return null;
   }
 

@@ -9,13 +9,10 @@ class AbstractRepo <T extends Entity> {
   final T Function(Map<String, dynamic> json) fromJson;
   Database? _database;
 
-  // AbstractRepo({required this.tableName, required T Function(Map<String, dynamic> json) fromJson}): _fromJson = fromJson;
   AbstractRepo({required this.tableName, required this.fromJson});
 
   Future<Database> get database async {
-    // debugPrint( 'REPO: get database called' );
     if (_database != null) {
-      // debugPrint( 'REPO: database exists' );
       return _database!;
     }
     debugPrint( 'REPO: database does not exist' );
@@ -51,7 +48,6 @@ class AbstractRepo <T extends Entity> {
       sqlQuery += ', $key TEXT';
     }
     sqlQuery += ')';
-    // print(sqlQuery);
     debugPrint(sqlQuery);
 
     await db.execute(sqlQuery);
@@ -61,9 +57,7 @@ class AbstractRepo <T extends Entity> {
     debugPrint ('REPO: getAll called');
     final db = await database;
     List<Map<String, dynamic>> maps = await db.query(tableName);
-    // return answer.map((e) => fromJson(e)).toList();
     debugPrint ('maps: $maps');
-    // List<T> entities = maps.map((map) => fromJson(map)).toList();
     List<T> entities = [];
     for (var map in maps) {
       debugPrint (map.toString());
