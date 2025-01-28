@@ -1,4 +1,5 @@
 import 'package:exam_project/src/mvrc/controller/controller.dart';
+import 'package:exam_project/src/mvrc/view/menu_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:exam_project/src/mvrc/view/list_view.dart';
@@ -37,6 +38,8 @@ class MyApp<T extends Entity> extends StatelessWidget {
             debugPrint (uri.path);
             switch (uri.path) {
               case '/':
+                return MenuView();
+              case '/list_items':
                 return ListItemView(controller: controller);
               case '/add_edit_item':
                 int? idAux;
@@ -50,7 +53,8 @@ class MyApp<T extends Entity> extends StatelessWidget {
                   fromJson: fromJson,
                 );
               default:
-                return ListItemView(controller: controller);
+                return MenuView();
+                // return ListItemView(controller: controller);
             }
           }
         );
