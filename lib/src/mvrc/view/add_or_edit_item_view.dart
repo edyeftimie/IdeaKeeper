@@ -48,10 +48,11 @@ class _AddEditItemState<T extends Entity> extends State<AddEditItem<T>> {
                 if (isAdd) {
                   // await widget.repo.insert(entity, null);
                   await widget.controller.addEntity(entity);
-                } else {
-                  // await widget.repo.update(entity);
-                  await widget.controller.updateEntity(entity);
                 }
+                // } else {
+                //   // await widget.repo.update(entity);
+                //   await widget.controller.updateEntity(entity);
+                // }
                 Navigator.pop(context, entity.toJson());
               },
             );

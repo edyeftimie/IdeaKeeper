@@ -27,7 +27,7 @@ class MenuView extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pushNamed('/list_items');
               },
-              child: Text('Registration Section'),
+              child: Text('Main Section'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -37,7 +37,7 @@ class MenuView extends StatelessWidget {
                   Navigator.of(context).pushNamed('/genres_list');
                 }
               },
-              child: Text('Report Section'),
+              child: Text('Reports Section'),
             ),
           ],
         ),

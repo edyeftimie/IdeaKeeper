@@ -9,11 +9,9 @@ class ServerController <T extends Entity> {
   final String baseUrl;
   late WebSocketController _webSocketController;
   final T Function(Map<String, dynamic> json) fromJson;
-  final String add = 'book';
-  final String update = 'book';
-  final String delete = 'book';
-  final String getById = 'book';
-  final String url = 'ws://localhost:2419';
+  final String crud = 'transaction';
+  final String get = 'transactions';
+  final String url = 'ws://localhost:2528';
 
   ServerController({required this.baseUrl, required Function onReconnect, required this.fromJson}) {
     _webSocketController = WebSocketController(url: url, onReconnect: onReconnect);
@@ -55,7 +53,7 @@ class ServerController <T extends Entity> {
 
   Future<List<T>> fetchItems() async {
     //MODIFICATION
-    final response = await http.get(Uri.parse('$baseUrl/all'));
+    final response = await http.get(Uri.parse('$baseUrl/$get'));
     if (response.statusCode == 200) {
       debugPrint ( 'serverController: fetchItems response 200' );
       debugPrint ( response.body );
@@ -78,7 +76,7 @@ class ServerController <T extends Entity> {
   Future<T> addEntity(T entity) async {
     final response = await http.post(
       //MODIFICATION
-      Uri.parse('$baseUrl/$add'),
+      Uri.parse('$baseUrl/$crud'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(entity.toJson()),
     );
@@ -87,7 +85,7 @@ class ServerController <T extends Entity> {
     debugPrint(json.encode(entity.toJson()));
     debugPrint(response.body);
 
-    if (response.statusCode != 200) {
+    if (response.statusCode != 201) {
       throw Exception('Failed to add activity');
     }
 
@@ -96,21 +94,21 @@ class ServerController <T extends Entity> {
     return fromJson(json.decode(response.body));
   }
 
-  Future<void> updateEntity(T entity) async {
-    final response = await http.put(
-      //MODIFICATION
-      Uri.parse('$baseUrl/$update/${entity.id}'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(entity.toJson()),
-    );
+  // Future<void> updateEntity(T entity) async {
+  //   final response = await http.put(
+  //     //MODIFICATION
+  //     Uri.parse('$baseUrl/$crud/${entity.id}'),
+  //     headers: {'Content-Type': 'application/json'},
+  //     body: json.encode(entity.toJson()),
+  //   );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to update activity');
-    }
-  }
+  //   if (response.statusCode != 200) {
+  //     throw Exception('Failed to update activity');
+  //   }
+  // }
 
   Future<void> deleteEntity(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/$delete/$id'));
+    final response = await http.delete(Uri.parse('$baseUrl/$crud/$id'));
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete activity');
@@ -118,7 +116,7 @@ class ServerController <T extends Entity> {
   }
 
   Future<T> getEntityById(int id) async {
-    final response = await http.get(Uri.parse('$baseUrl/$getById/$id'));
+    final response = await http.get(Uri.parse('$baseUrl/$crud/$id'));
 
     if (response.statusCode == 200) {
       return fromJson(json.decode(response.body));

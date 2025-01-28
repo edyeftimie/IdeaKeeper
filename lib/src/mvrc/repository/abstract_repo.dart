@@ -88,16 +88,16 @@ class AbstractRepo <T extends Entity> {
     }
   }
 
-  Future<void> update(T entity) async {
-    debugPrint ('REPO: update called');
-    final db = await database;
-    await db.update(
-      tableName, 
-      entity.toJson(),
-      where: 'id = ?', 
-      whereArgs: [entity.id]
-    );
-  }
+  // Future<void> update(T entity) async {
+  //   debugPrint ('REPO: update called');
+  //   final db = await database;
+  //   await db.update(
+  //     tableName, 
+  //     entity.toJson(),
+  //     where: 'id = ?', 
+  //     whereArgs: [entity.id]
+  //   );
+  // }
 
   Future<void> delete(int id) async {
     debugPrint ('REPO: delete called');
