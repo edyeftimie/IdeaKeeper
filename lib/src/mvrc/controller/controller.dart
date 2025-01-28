@@ -76,7 +76,9 @@ class Controller<T extends Entity> {
   Future<void> deleteEntity(int id) async {
     if (isOnline.value == true) {
       try {
+        debugPrint ( "Controller: deleteEntity on server" );
         await serverController.deleteEntity(id);
+        debugPrint ("i deleted the entity from the server");
       } catch (e) {
         debugPrint( "ERROR controller: deleteEntity on server $e" );
       }

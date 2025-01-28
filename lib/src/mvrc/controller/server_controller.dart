@@ -65,7 +65,7 @@ class ServerController <T extends Entity> {
       for (var item in data) {
         items.add(fromJson(item));
       }
-      debugPrint (items.toString());
+      // debugPrint (items.toString());
       return data.map((item) => fromJson(item)).toList();
     } else {
       debugPrint ( 'serverController: fetchItems response not 200' );
@@ -83,7 +83,7 @@ class ServerController <T extends Entity> {
 
     //log the body of the request
     debugPrint(json.encode(entity.toJson()));
-    debugPrint(response.body);
+    // debugPrint(response.body);
 
     if (response.statusCode != 201) {
       throw Exception('Failed to add activity');
@@ -109,10 +109,13 @@ class ServerController <T extends Entity> {
 
   Future<void> deleteEntity(int id) async {
     final response = await http.delete(Uri.parse('$baseUrl/$crud/$id'));
+    debugPrint (response.body);
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete activity');
-    }
+    } else {
+      debugPrint ('serverController: deleteEntity response 200');
+    } 
   }
 
   Future<T> getEntityById(int id) async {

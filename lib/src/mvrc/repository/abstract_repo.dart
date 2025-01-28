@@ -70,10 +70,10 @@ class AbstractRepo <T extends Entity> {
   Future<void> insert(T entity, int? id) async {
     debugPrint ('REPO: insert called');
     final db = await database;
-    debugPrint ('entity.id: ${entity.id}');
+    // debugPrint ('entity.id: ${entity.id}');
     id ??= await getAvailableId(); // if id is null, get the next available id 
     entity.id = id;
-    debugPrint ('entity.id: ${entity.id}');
+    // debugPrint ('entity.id: ${entity.id}');
     await db.insert(tableName, entity.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 

@@ -1,3 +1,5 @@
+import 'package:exam_project/src/mvrc/controller/globals.dart';
+import 'package:exam_project/src/mvrc/view/widgets/message.dart';
 import 'package:flutter/material.dart';
 // import 'package:exam_project/src/mvrc/repository/abstract_repo.dart';
 import 'package:exam_project/src/mvrc/controller/controller.dart';
@@ -42,6 +44,11 @@ class _ListItemViewState extends State<ListItemView> {
   }
 
   Future<void> _navigateToEdit(BuildContext context, dynamic item) async {
+    // if (isOnline.value == false) {
+    //   MakeAlertDialog(context, 'Not available in offline mode');
+    //   debugPrint('Offline mode');
+    //   return;
+    // }
     int idAux = int.parse(item['id'].toString());
     final result = await Navigator.of(context).pushNamed('/add_edit_item?id=$idAux');
     if (result != null && result is Map<String, dynamic>) {
@@ -55,6 +62,11 @@ class _ListItemViewState extends State<ListItemView> {
   }
 
   Future<void> _navigateToAdd(BuildContext context) async {
+    if (isOnline.value == false) {
+      MakeAlertDialog(context, 'Not available in offline mode');
+      debugPrint('Offline mode');
+      return;
+    }
     final result = await Navigator.of(context).pushNamed('/add_edit_item');
     if (result != null && result is Map<String, dynamic>) {
       _itemsNotifier.value.add(result);
@@ -64,9 +76,15 @@ class _ListItemViewState extends State<ListItemView> {
   }
 
   Future<void> _navigateToDelete(BuildContext context, dynamic item) async {
+    if (isOnline.value == false) {
+      MakeAlertDialog(context, 'Not available in offline mode');
+      debugPrint('Offline mode');
+      return;
+    }
     int idAux = int.parse(item['id'].toString());
     // await widget.repo.delete(idAux); // Assuming delete operation handled by repo.
-    await widget.controller.repo.delete(idAux);
+    debugPrint ('_navigateToDelete: idAux = $idAux');
+    await widget.controller.deleteEntity(idAux);
     _itemsNotifier.value.removeWhere((e) => e['id'] == idAux);
     _itemsNotifier.value = List<Map<String, dynamic>>.from(_itemsNotifier.value);
     debugPrint('Item deleted');

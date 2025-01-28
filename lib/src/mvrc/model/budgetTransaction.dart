@@ -1,5 +1,5 @@
 import 'package:exam_project/src/mvrc/model/abstract_entity.dart';
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 
 class BudgetTransaction implements Entity {
   @override
@@ -31,9 +31,9 @@ class BudgetTransaction implements Entity {
     if (json.isEmpty) {
       return BudgetTransaction.empty();
     }
-    debugPrint ('BudgetTransaction.fromJson: json = $json');
-    debugPrint  ('BudgetTransaction.fromJson: id = ${json['id']}');
-    debugPrint (json['id'].runtimeType.toString());
+    // debugPrint ('BudgetTransaction.fromJson: json = $json');
+    // debugPrint  ('BudgetTransaction.fromJson: id = ${json['id']}');
+    // debugPrint (json['id'].runtimeType.toString());
     double amountOfMoney = json['amount'] is double
       ? json['amount']
       : double.tryParse(json['amount'].toString()) ?? 0.0;
