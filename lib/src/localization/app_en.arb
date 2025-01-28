@@ -1,0 +1,6 @@
+{
+  "appTitle": "Remote Winery",
+  "@appTitle": {
+    "description": "The title of the application"
+  }
+}

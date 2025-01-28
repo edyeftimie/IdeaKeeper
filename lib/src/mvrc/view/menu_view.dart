@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:exam_project/src/mvrc/controller/globals.dart';
 import 'package:exam_project/src/mvrc/view/widgets/message.dart';
+import 'package:exam_project/src/mvrc/settings/settings_view.dart';
 
 class MenuView extends StatelessWidget {
   @override
@@ -8,6 +9,15 @@ class MenuView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Menu'),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.restorablePushNamed(context, SettingsView.routeName);
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Column(

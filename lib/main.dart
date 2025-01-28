@@ -1,5 +1,7 @@
 import 'package:exam_project/src/mvrc/controller/controller.dart';
 import 'package:exam_project/src/mvrc/controller/web_socket_controller.dart';
+import 'package:exam_project/src/mvrc/settings/settings_controller.dart';
+import 'package:exam_project/src/mvrc/settings/settings_service.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -17,10 +19,13 @@ void main() async {
   }
 
   WidgetsFlutterBinding.ensureInitialized();
-  // create and T that has the TestEnity as the type
-  // final AbstractRepo<TestEntity> repo = AbstractRepo(tableName: 'testing', fromJson: TestEntity.fromJson);
+
+  final SettingsController settingsController = SettingsController(SettingsService());
+  await settingsController.loadSettings();
+
   final AbstractRepo<Book> repo = AbstractRepo(tableName: 'books3', fromJson: Book.fromJson);
   await repo.database;
+
   final ServerController<Book> serverController = ServerController(
     baseUrl: 'http://192.168.1.128:2419',
     onReconnect: () async {
@@ -44,6 +49,6 @@ void main() async {
   );
   await controller.initDatabase();
   
-  runApp(MyApp<Book>(controller: controller, fromJson: Book.fromJson));
+  runApp(MyApp<Book>(settingsController: settingsController,controller: controller, fromJson: Book.fromJson));
   // runApp(MyApp<TestEntity>(repo: repo, fromJson: TestEntity.fromJson));
 }
