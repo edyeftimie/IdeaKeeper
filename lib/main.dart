@@ -27,7 +27,8 @@ void main() async {
   await repo.database;
 
   final ServerController<Book> serverController = ServerController(
-    baseUrl: 'http://192.168.1.128:2419',
+    // baseUrl: 'http://192.168.1.128:2419',
+    baseUrl: 'http://192.168.154.189:2419',
     onReconnect: () async {
       debugPrint('Reconnected');
     },
@@ -35,7 +36,8 @@ void main() async {
   );
 
   final WebSocketController webSocketController = WebSocketController(
-    url: 'ws://192.168.1.128:2419', 
+    url: 'ws://192.168.154.189:2419',
+    // url: 'ws://192.168.1.128:2419', 
     onReconnect: () async { 
       debugPrint('Reconnected');
       // await serverController.fetchItems();
