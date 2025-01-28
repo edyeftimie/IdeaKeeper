@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:exam_project/src/mvrc/repository/abstract_repo.dart';
+// import 'package:exam_project/src/mvrc/repository/abstract_repo.dart';
+import 'package:exam_project/src/mvrc/controller/controller.dart';
 // import 'package:flutter/src/foundation/change_notifier.dart';
 import 'dart:math';
 
 class ListItemView extends StatefulWidget {
-  const ListItemView({Key? key, required this.repo}) : super(key: key);
+  // final AbstractRepo repo;
+  final Controller controller;
 
-  final AbstractRepo repo;
+  // const ListItemView({Key? key, required this.repo}) : super(key: key);
+  const ListItemView({Key? key, required this.controller}) : super(key: key);
 
   @override
   _ListItemViewState createState() => _ListItemViewState();
@@ -29,7 +32,12 @@ class _ListItemViewState extends State<ListItemView> {
   }
 
   Future<void> _loadItems() async {
-    final items = await widget.repo.getAll();
+    // final items = await widget.repo.getAll();
+    final items = await widget.controller.repo.getAll();
+    if (items.isEmpty) {
+      debugPrint('No items found');
+      return;
+    }
     _itemsNotifier.value = items.map((e) => e.toJson()).toList();
   }
 
@@ -57,7 +65,8 @@ class _ListItemViewState extends State<ListItemView> {
 
   Future<void> _navigateToDelete(BuildContext context, dynamic item) async {
     int idAux = int.parse(item['id'].toString());
-    await widget.repo.delete(idAux); // Assuming delete operation handled by repo.
+    // await widget.repo.delete(idAux); // Assuming delete operation handled by repo.
+    await widget.controller.repo.delete(idAux);
     _itemsNotifier.value.removeWhere((e) => e['id'] == idAux);
     _itemsNotifier.value = List<Map<String, dynamic>>.from(_itemsNotifier.value);
     debugPrint('Item deleted');

@@ -13,9 +13,9 @@ class AbstractRepo <T extends Entity> {
   AbstractRepo({required this.tableName, required this.fromJson});
 
   Future<Database> get database async {
-    debugPrint( 'REPO: get database called' );
+    // debugPrint( 'REPO: get database called' );
     if (_database != null) {
-      debugPrint( 'REPO: database exists' );
+      // debugPrint( 'REPO: database exists' );
       return _database!;
     }
     debugPrint( 'REPO: database does not exist' );
@@ -63,21 +63,24 @@ class AbstractRepo <T extends Entity> {
     List<Map<String, dynamic>> maps = await db.query(tableName);
     // return answer.map((e) => fromJson(e)).toList();
     debugPrint ('maps: $maps');
-    List<T> entities = maps.map((map) => fromJson(map)).toList();
+    // List<T> entities = maps.map((map) => fromJson(map)).toList();
+    List<T> entities = [];
+    for (var map in maps) {
+      debugPrint (map.toString());
+      entities.add(fromJson(map));
+    }
     debugPrint (entities.toString());
     return entities;
   }
 
-  Future<void> insert(T entity) async {
+  Future<void> insert(T entity, int? id) async {
     debugPrint ('REPO: insert called');
     final db = await database;
     debugPrint ('entity.id: ${entity.id}');
-    int id = await getAvailableId();
-    debugPrint ('id: $id');
+    id ??= await getAvailableId(); // if id is null, get the next available id 
     entity.id = id;
     debugPrint ('entity.id: ${entity.id}');
-    debugPrint ('entity.toJson(): ${entity.toJson()}');
-    await db.insert(tableName, entity.toJson());
+    await db.insert(tableName, entity.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<int> getAvailableId() async {

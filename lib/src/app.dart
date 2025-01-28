@@ -1,17 +1,19 @@
+import 'package:exam_project/src/mvrc/controller/controller.dart';
 import 'package:flutter/material.dart';
 
 import 'package:exam_project/src/mvrc/view/list_view.dart';
-import 'package:exam_project/src/mvrc/repository/abstract_repo.dart';
 import 'package:exam_project/src/mvrc/view/add_or_edit_item_view.dart ';
 import 'package:exam_project/src/mvrc/model/abstract_entity.dart';
 
 class MyApp<T extends Entity> extends StatelessWidget {
-  final AbstractRepo<T> repo;
+  // final AbstractRepo<T> repo;
+  final Controller<T> controller;
   final T Function(Map<String, dynamic> json) fromJson;
 
   const MyApp({
     Key? key,
-    required this.repo,
+    // required this.repo,
+    required this.controller,
     required this.fromJson,
   }) : super(key: key);
 
@@ -35,19 +37,20 @@ class MyApp<T extends Entity> extends StatelessWidget {
             debugPrint (uri.path);
             switch (uri.path) {
               case '/':
-                return ListItemView(repo: repo);
+                return ListItemView(controller: controller);
               case '/add_edit_item':
                 int? idAux;
                 if (uri.queryParameters['id'] != null) {
                   idAux = int.parse(uri.queryParameters['id']!);
                 }
                 return AddEditItem<T>(
-                  repo: repo,
+                  // repo: repo,
+                  controller: controller,
                   id: idAux,
                   fromJson: fromJson,
                 );
               default:
-                return ListItemView(repo: repo);
+                return ListItemView(controller: controller);
             }
           }
         );
