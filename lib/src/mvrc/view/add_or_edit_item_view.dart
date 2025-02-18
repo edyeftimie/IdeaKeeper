@@ -47,7 +47,7 @@ class _AddEditItemState<T extends Entity> extends State<AddEditItem<T>> {
                 T entity = widget.fromJson(entityMap);
                 if (isAdd) {
                   // await widget.repo.insert(entity, null);
-                  await widget.controller.addEntity(entity);
+                  await widget.controller.addEntity(context, entity);
                 }
                 // } else {
                   // await widget.controller.getEntityById(entity.id);

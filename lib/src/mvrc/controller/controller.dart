@@ -11,19 +11,19 @@ class Controller<T extends Entity> {
 
   Controller({required this.serverController, required this.repo});
 
-  Future<void> initDatabase() async {
+  Future<void> initDatabase(BuildContext context) async {
     try{
       await repo.database;
       debugPrint ( "Controller: init db" );
-      await SyncItemsFromServer(); 
+      await SyncItemsFromServer(context); 
     } catch (e) {
       debugPrint( "ERROR controller: init db from server $e" );
     }
   }
 
-  Future<List<Map<String, dynamic>>> SyncItemsFromServer() async {
+  Future<List<Map<String, dynamic>>> SyncItemsFromServer(BuildContext context) async {
     debugPrint ( "SyncItemsFromServer" );
-    final items = await serverController.fetchItems();
+    final items = await serverController.fetchItems(context);
     debugPrint ( "SyncItemsFromServer: fetched items" );
     items.forEach((item) async {
       // debugPrint ( "SyncItemsFromServer: insert item" );
@@ -40,11 +40,11 @@ class Controller<T extends Entity> {
     return items.map((item) => item.toJson()).toList();
   }
 
-  Future<int> addEntity(T entity) async {
+  Future<int> addEntity(BuildContext context, T entity) async {
     T newEntity = entity;
     if (isOnline.value == true) {
       try {
-        newEntity = await serverController.addEntity(entity);
+        newEntity = await serverController.addEntity(context, entity);
         debugPrint( "Controller: addEntity on server" );
       } catch (e) {
         debugPrint( "ERROR controller: addEntity on server $e" );

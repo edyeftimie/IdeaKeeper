@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:exam_project/src/mvrc/controller/controller.dart';
 import 'package:exam_project/src/mvrc/controller/globals.dart';
 
-class MonthlyAnalysis extends StatefulWidget {
+class SpendingAnalaysis extends StatefulWidget {
   final Controller controller;
 
-  const MonthlyAnalysis({Key? key, required this.controller}) : super(key: key);
+  const SpendingAnalaysis({Key? key, required this.controller}) : super(key: key);
 
   @override
   _MonthlyAnalysisState createState() => _MonthlyAnalysisState();
 }
 
-class _MonthlyAnalysisState extends State<MonthlyAnalysis> {
+class _MonthlyAnalysisState extends State<SpendingAnalaysis> {
   late ValueNotifier<Map<String, double>> _itemsNotifier;
 
   @override

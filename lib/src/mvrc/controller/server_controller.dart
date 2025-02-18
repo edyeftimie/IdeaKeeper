@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:exam_project/src/mvrc/controller/web_socket_controller.dart';
 import 'package:exam_project/src/mvrc/model/abstract_entity.dart';
+import 'package:exam_project/src/mvrc/view/widgets/progress_indicator.dart';
 
 class ServerController <T extends Entity> {
   final String baseUrl;
@@ -75,47 +76,66 @@ class ServerController <T extends Entity> {
     }
   }
 
-  Future<List<T>> fetchItems() async {
+  // Future<List<T>> fetchItems() async {
+  Future<List<T>> fetchItems(BuildContext context) async {
     //MODIFICATION
-    final response = await http.get(Uri.parse('$baseUrl/$get'));
-    if (response.statusCode == 200) {
-      debugPrint ( 'serverController: fetchItems response 200' );
-      debugPrint ( response.body );
-      List<dynamic> data = json.decode(response.body);
-      debugPrint ("serverController: fetchItems data");
-      debugPrint (data.toString());
+    try {
+      showLoading(context);
+      final response = await http.get(Uri.parse('$baseUrl/$get'));
+      if (response.statusCode == 200) {
+        debugPrint ( 'serverController: fetchItems response 200' );
+        // debugPrint ( response.body );
+        List<dynamic> data = json.decode(response.body);
+        // debugPrint ("serverController: fetchItems data");
+        // debugPrint (data.toString());
 
-      List<T> items = [];
-      for (var item in data) {
-        items.add(fromJson(item));
+        List<T> items = [];
+        for (var item in data) {
+          items.add(fromJson(item));
+        }
+        // debugPrint (items.toString());
+        return data.map((item) => fromJson(item)).toList();
+      } else {
+        debugPrint ( 'serverController: fetchItems response not 200' );
+        throw Exception('ERROR serverController: Failed to load activities');
       }
-      // debugPrint (items.toString());
-      return data.map((item) => fromJson(item)).toList();
-    } else {
-      debugPrint ( 'serverController: fetchItems response not 200' );
-      throw Exception('ERROR serverController: Failed to load activities');
+    } catch (e) {
+      debugPrint ('ERROR serverController: in fetch items: $e');
+      showErrorSnackbar(context, 'Error loading data');
+      return [];
+    } finally {
+      hideLoading(context);
     }
   }
 
-  Future<T> addEntity(T entity) async {
-    final response = await http.post(
-      //MODIFICATION
-      Uri.parse('$baseUrl/$crud'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(entity.toJson()),
-    );
+  Future<T> addEntity(BuildContext context, T entity) async {
+    try {
+      showLoading(context);
+      final response = await http.post(
+        //MODIFICATION
+        Uri.parse('$baseUrl/$crud'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(entity.toJson()),
+      );
 
-    //log the body of the request
-    debugPrint(json.encode(entity.toJson()));
-    // debugPrint(response.body);
+      //log the body of the request
+      debugPrint(json.encode(entity.toJson()));
+      // debugPrint(response.body);
 
-    if (response.statusCode != 201) {
-      throw Exception('Failed to add activity');
+      if (response.statusCode != 201) {
+        throw Exception('Failed to add activity');
+      }
+
+      sendWebSocketMessage('New activity added');
+      debugPrint ('serverController: addEntity response 200');
+      return fromJson(json.decode(response.body));
+    } catch (e) {
+      debugPrint ('ERROR serverController: in addEntity: $e');
+      showErrorSnackbar(context, 'Error adding data');
+      return entity;
+    } finally {
+      hideLoading(context);
     }
-
-    sendWebSocketMessage('New activity added');
-    debugPrint ('serverController: addEntity response 200');
-    return fromJson(json.decode(response.body));
   }
 
   // Future<void> updateEntity(T entity) async {
